@@ -19,18 +19,18 @@ export const IDOL_QUIZ_LIST = [
 export const MATH_QUIZ_LIST = [
   {
     id: 1,
-    question: ['2 + 2 = '],
-    answer: ['4'],
+    question: '2 + 2 = ',
+    answer: '4',
   },
   {
     id: 2,
-    question: ['43 - 19 = '],
-    answer: ['24'],
+    question: '43 - 19 = ',
+    answer: '24',
   },
   {
     id: 3,
-    question: ['13 * 3 = '],
-    answer: ['39'],
+    question: '13 * 3 = ',
+    answer: '39',
   },
 ];
 
