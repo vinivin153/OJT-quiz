@@ -1,8 +1,7 @@
 import SubjectButton from 'components/SubjectButton';
+import { SUBJECTS } from 'constants/constant';
 
 function Home() {
-  const SUBJECTS = ['수학', '영어', '아이돌'] as const;
-
   return (
     <div className="w-screen h-screen flex flex-col items-centers bg-[url('assets/images/background.svg')] bg-cover bg-center">
       <header className="flex items-center justify-center m-14 mb-0">
