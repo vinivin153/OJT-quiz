@@ -1,8 +1,7 @@
+import { INIT_ANSWER } from 'constants/constant';
 import { MATH_QUIZ_LIST } from 'data/quiz';
 import { FabricText, Group, Point, Rect, Canvas } from 'fabric';
 import { useEffect, useRef } from 'react';
-
-const INIT_ANSWER = '___';
 
 function MathQuiz() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
