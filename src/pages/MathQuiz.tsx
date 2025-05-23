@@ -7,7 +7,7 @@ const INIT_ANSWER = '___';
 function MathQuiz() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
-  const answerRef = useRef<string>(INIT_ANSWER);
+  const answerRef = useRef<FabricText>(null);
 
   useEffect(() => {
     const currentCanvas = canvasRef.current;
@@ -26,6 +26,8 @@ function MathQuiz() {
       textAlign: 'center',
       fill: '#000',
       fontFamily: 'BMJUA',
+      selectable: false,
+      hoverCursor: 'null',
     });
     const questionPos = new Point(canvas.getWidth() / 2 - 30, canvas.getHeight() / 5);
     questionText.setPositionByOrigin(questionPos, 'center', 'center');
@@ -37,11 +39,13 @@ function MathQuiz() {
       textAlign: 'center',
       fill: '#00a',
       fontFamily: 'BMJUA',
-      fontWeight: 'bold',
+      fontWeight: 600,
+      selectable: false,
+      hoverCursor: 'null',
     });
-    const answerPos = new Point(canvas.getWidth() / 2 + 100, canvas.getHeight() / 5);
+    const answerPos = new Point(canvas.getWidth() / 2 + 80, canvas.getHeight() / 5 - 5);
     answerText.setPositionByOrigin(answerPos, 'left', 'center');
-    answerRef.current = answerText.text;
+    answerRef.current = answerText;
     canvas.add(answerText);
 
     /** 숫자 버튼 생성함수 */
@@ -74,19 +78,21 @@ function MathQuiz() {
       const group = new Group([rect, text], {
         ...options,
         evented: true,
+        selectable: false,
+        hoverCursor: 'pointer',
       });
 
       // 그룹에 클릭 이벤트 추가
       group.on('mousedown', () => {
-        console.log('Clicked number:', number);
+        // 클릭한 숫자에 따라 정답 텍스트 업데이트
+        if (answerRef.current) {
+          const currentText = answerRef.current.text;
+          const isInitial = currentText === INIT_ANSWER;
+          const newText = isInitial ? number.toString() : currentText + number.toString();
 
-        // 클릭 시 정답 텍스트에 숫자 추가
-        if (answerRef.current === INIT_ANSWER) {
-          answerRef.current = '';
+          answerRef.current.set({ text: newText });
+          canvas.requestRenderAll();
         }
-
-        answerRef.current += number.toString();
-        canvas.requestRenderAll();
       });
 
       return group;
