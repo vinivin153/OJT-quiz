@@ -1,18 +1,27 @@
+import CheckAnswerButton from 'components/CheckAnswerButton';
 import { INIT_ANSWER } from 'constants/constant';
 import { MATH_QUIZ_LIST } from 'data/quiz';
 import { FabricText, Group, Point, Rect, Canvas } from 'fabric';
 import { useEffect, useRef } from 'react';
+import useStepStore from 'store/useStepStore';
 
 function MathQuiz() {
+  // canvas 관련 ref
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
+  const questionRef = useRef<FabricText>(null);
   const answerRef = useRef<FabricText>(null);
+
+  // 문제 정보 관련 로직
+  const { step, nextStep } = useStepStore((state) => state);
+  const question = MATH_QUIZ_LIST[step - 1].question;
+  const answer = MATH_QUIZ_LIST[step - 1].answer;
 
   useEffect(() => {
     const currentCanvas = canvasRef.current;
     if (!currentCanvas) return;
 
-    // 정적 canvas 생성
+    // canvas 생성
     const canvas = new Canvas(currentCanvas, {
       width: window.innerWidth - 120,
       height: window.innerHeight - 260,
@@ -20,7 +29,7 @@ function MathQuiz() {
     canvas.backgroundColor = '#f3f3f3';
 
     // 질문 텍스트 생성
-    const questionText = new FabricText(MATH_QUIZ_LIST[0].question, {
+    const questionText = new FabricText(question, {
       fontSize: 62,
       textAlign: 'center',
       fill: '#000',
@@ -28,12 +37,13 @@ function MathQuiz() {
       selectable: false,
       hoverCursor: 'null',
     });
-    const questionPos = new Point(canvas.getWidth() / 2 - 30, canvas.getHeight() / 5);
-    questionText.setPositionByOrigin(questionPos, 'center', 'center');
+    const questionPos = new Point(canvas.getWidth() / 2 + 50, canvas.getHeight() / 5);
+    questionText.setPositionByOrigin(questionPos, 'right', 'center');
+    questionRef.current = questionText;
     canvas.add(questionText);
 
     // 정답 텍스트 생성
-    const answerText = new FabricText(INIT_ANSWER, {
+    const answerText = new FabricText('', {
       fontSize: 62,
       textAlign: 'center',
       fill: '#00a',
@@ -42,7 +52,7 @@ function MathQuiz() {
       selectable: false,
       hoverCursor: 'null',
     });
-    const answerPos = new Point(canvas.getWidth() / 2 + 80, canvas.getHeight() / 5 - 5);
+    const answerPos = new Point(canvas.getWidth() / 2 + 50, canvas.getHeight() / 5);
     answerText.setPositionByOrigin(answerPos, 'left', 'center');
     answerRef.current = answerText;
     canvas.add(answerText);
@@ -107,7 +117,7 @@ function MathQuiz() {
     }
 
     // 렌더링 하기
-    canvas.renderAll();
+    canvas.requestRenderAll();
     fabricCanvasRef.current = canvas;
 
     return () => {
@@ -118,11 +128,43 @@ function MathQuiz() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !questionRef.current || !answerRef.current) return;
+
+    // 문제 텍스트 업데이트
+    questionRef.current.set({ text: question });
+    const questionPos = new Point(fabricCanvasRef.current.getWidth() / 2 + 50, fabricCanvasRef.current.getHeight() / 5);
+    questionRef.current.setPositionByOrigin(questionPos, 'right', 'center');
+    answerRef.current.set({ text: INIT_ANSWER });
+
+    // 캔버스 렌더링
+    fabricCanvasRef.current.requestRenderAll();
+  }, [step]);
+
+  /** 정답확인 버튼을 클릭했을 때 정답인 경우 다음 단계로 넘어가고, 오답인 경우 다시 시도하라는 알림을 띄움 */
+  const handleCheckAnswerButtonClick = () => {
+    if (!answerRef.current) return;
+
+    const currentText = answerRef.current.text;
+    const isCorrectAnswer = currentText === answer.toString();
+
+    if (isCorrectAnswer) {
+      alert('정답입니다!');
+      nextStep();
+      return;
+    }
+
+    alert('오답입니다! 다시 시도해보세요.');
+    answerRef.current.set({ text: INIT_ANSWER });
+    fabricCanvasRef.current?.requestRenderAll();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center p-10 pt-0 box-border">
       <canvas className="rounded-2xl" ref={canvasRef}>
         progress
       </canvas>
+      <CheckAnswerButton handleCheckAnswerButtonClick={handleCheckAnswerButtonClick} />
     </div>
   );
 }
