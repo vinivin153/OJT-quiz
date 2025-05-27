@@ -1,4 +1,6 @@
+import EngQuiz from 'pages/EngQuiz';
 import Home from 'pages/Home';
+import IdolQuiz from 'pages/IdolQuiz';
 import MathQuiz from 'pages/MathQuiz';
 import QuizLayout from 'pages/QuizLayout';
 import { createBrowserRouter } from 'react-router';
@@ -19,11 +21,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'english',
-        element: <MathQuiz />,
+        element: <EngQuiz />,
       },
       {
         path: 'idol',
-        element: <MathQuiz />,
+        element: <IdolQuiz />,
       },
     ],
   },
