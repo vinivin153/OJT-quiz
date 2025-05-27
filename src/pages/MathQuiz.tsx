@@ -1,6 +1,7 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
 import { MATH_QUIZ_LIST } from 'data/quiz';
 import useMathCanvas from 'hooks/useMathCanvas';
+import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 function MathQuiz() {
@@ -8,6 +9,7 @@ function MathQuiz() {
   const question = MATH_QUIZ_LIST[step - 1].question;
   const answer = MATH_QUIZ_LIST[step - 1].answer;
   const { canvasRef, resetAnswer, getCurrentAnswer } = useMathCanvas(question);
+  const openModal = useModalStore((state) => state.openModal);
 
   /** 정답확인 버튼을 클릭했을 때 정답인 경우 다음 단계로 넘어가고, 오답인 경우 다시 시도하라는 알림을 띄움 */
   const handleCheckAnswerButtonClick = () => {
@@ -15,12 +17,14 @@ function MathQuiz() {
     const isCorrectAnswer = currentAnswer === answer;
 
     if (isCorrectAnswer) {
-      alert('정답입니다!');
-      nextStep();
+      openModal('correct');
+      setTimeout(() => {
+        nextStep();
+      }, 2000);
       return;
     }
 
-    alert('오답입니다! 다시 시도해보세요.');
+    openModal('incorrect');
     resetAnswer();
   };
 

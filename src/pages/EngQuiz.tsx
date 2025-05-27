@@ -1,6 +1,7 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
 import { ENG_QUIZ_LIST } from 'data/quiz';
 import useEngCanvas from 'hooks/useEngCanvas';
+import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 const EngQuiz = () => {
@@ -8,18 +9,21 @@ const EngQuiz = () => {
   const question = ENG_QUIZ_LIST[step - 1].parts;
   const answer = ENG_QUIZ_LIST[step - 1].answer;
   const { canvasRef, getCurrentAnswer, resetAnswer } = useEngCanvas(question);
+  const openModal = useModalStore((state) => state.openModal);
 
   const handleCheckAnswerButtonClick = () => {
     const currentAnswer = getCurrentAnswer();
     const isCorrectAnswer = currentAnswer === answer;
 
     if (isCorrectAnswer) {
-      alert('정답입니다!');
-      nextStep();
+      openModal('correct');
+      setTimeout(() => {
+        nextStep();
+      }, 2000);
       return;
     }
 
-    alert('오답입니다! 다시 시도해보세요.');
+    openModal('incorrect');
     resetAnswer();
   };
 

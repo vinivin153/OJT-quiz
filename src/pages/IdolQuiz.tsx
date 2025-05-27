@@ -1,6 +1,7 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
 import { IDOL_QUIZ_LIST } from 'data/quiz';
 import useIdolCanvas from 'hooks/useIdolCanvas';
+import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 function IdolQuiz() {
@@ -9,18 +10,21 @@ function IdolQuiz() {
   const answers = IDOL_QUIZ_LIST[step - 1].answer;
 
   const { canvasRef, getCurrentAnswers, resetAnswer } = useIdolCanvas(question.front, question.back);
+  const openModal = useModalStore((state) => state.openModal);
 
   const handleCheckAnswerButtonClick = () => {
     const currentAnswers = getCurrentAnswers();
     const isCorrectAnswer = Object.entries(answers).every(([key, value]) => currentAnswers[key] === value);
 
     if (isCorrectAnswer) {
-      alert('정답입니다!');
-      nextStep();
+      openModal('correct');
+      setTimeout(() => {
+        nextStep();
+      }, 2000);
       return;
     }
 
-    alert('오답입니다! 다시 시도해보세요.');
+    openModal('incorrect');
     resetAnswer();
   };
 
