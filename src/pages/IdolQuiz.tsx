@@ -12,7 +12,7 @@ function IdolQuiz() {
 
   const handleCheckAnswerButtonClick = () => {
     const currentAnswers = getCurrentAnswers();
-    const isCorrectAnswer = Object.entries(currentAnswers).every(([key, value]) => answers[key] === value);
+    const isCorrectAnswer = Object.entries(answers).every(([key, value]) => currentAnswers[key] === value);
 
     if (isCorrectAnswer) {
       alert('정답입니다!');
