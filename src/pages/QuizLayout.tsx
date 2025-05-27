@@ -1,3 +1,4 @@
+import AnswerFeedbackModal from 'components/AnswerFeedbackModal';
 import Header from 'components/Header';
 import ProgressBar from 'components/ProgressBar';
 import { Outlet } from 'react-router';
@@ -11,6 +12,7 @@ function QuizLayout() {
       <div className="quiz-content">
         <Outlet />
       </div>
+      <AnswerFeedbackModal />
     </div>
   );
 }
