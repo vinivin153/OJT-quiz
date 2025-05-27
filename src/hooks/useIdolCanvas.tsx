@@ -127,7 +127,6 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i];
       if (obj instanceof Line && obj.get('connectionKey') === frontWord) {
-        console.log('Found and removing line for:', frontWord);
         canvas.remove(obj);
         removedConnection = obj;
         break;
@@ -361,7 +360,6 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
     canvas.requestRenderAll();
   };
 
-  console.log(connections);
   return {
     canvasRef,
     getCurrentAnswers,
