@@ -26,8 +26,8 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
   }, []);
 
   useEffect(() => {
+    resetQuiz();
     resetAnswer();
-    initializeCanvasElements();
   }, [frontWords, backWords]);
 
   /** canvas 생성 함수 */
@@ -275,6 +275,23 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
     }
 
     return answers;
+  };
+
+  /** 문제 초기화 */
+  const resetQuiz = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    // 기존 단어 박스 제거
+    canvas.getObjects().forEach((obj) => {
+      if (obj instanceof Group) {
+        canvas.remove(obj);
+      }
+    });
+
+    const frontWordBoxes = createWordBoxes(canvas, frontWords, true);
+    const backWordBoxes = createWordBoxes(canvas, backWords, false);
+    canvas.add(...frontWordBoxes, ...backWordBoxes);
   };
 
   /** 정답 초기화 */
