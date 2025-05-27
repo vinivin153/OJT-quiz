@@ -9,6 +9,7 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
   const [connections, setConnections] = useState<
     Map<string, { line: Line; frontBox: Group; backBox: Group; text: string }>
   >(new Map());
+
   useEffect(() => {
     const currentCanvas = canvasRef.current;
     if (!currentCanvas) return;
@@ -114,6 +115,50 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
     return questionText;
   };
 
+  /** 기존 연결 제거 함수 */
+  const removeExistingConnection = (frontWord: string) => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return null;
+
+    // 캔버스에서 직접 라인을 찾아서 제거
+    const objects = canvas.getObjects();
+    let removedConnection = null;
+
+    for (let i = objects.length - 1; i >= 0; i--) {
+      const obj = objects[i];
+      if (obj instanceof Line && obj.get('connectionKey') === frontWord) {
+        console.log('Found and removing line for:', frontWord);
+        canvas.remove(obj);
+        removedConnection = obj;
+        break;
+      }
+    }
+
+    // 연결된 박스들의 색상도 초기화
+    objects.forEach((obj) => {
+      if (obj instanceof Group) {
+        if (obj.get('text') === frontWord && obj.get('role') === 'front') {
+          obj.item(0).set('fill', '#ffffff');
+        }
+      }
+    });
+
+    // connections state에서도 제거
+    setConnections((prev) => {
+      const newConnections = new Map(prev);
+      const connection = newConnections.get(frontWord);
+      if (connection) {
+        // back box 색상도 초기화
+        connection.backBox.item(0).set('fill', '#ffffff');
+        newConnections.delete(frontWord);
+      }
+      return newConnections;
+    });
+
+    canvas.requestRenderAll();
+    return removedConnection;
+  };
+
   /** 단어 박스 생성 함수 */
   const createWordBox = (canvas: Canvas, word: string, pos: { left: number; top: number }, isFront: boolean) => {
     const wordRect = new Rect({
@@ -159,20 +204,7 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
         selectedFrontBox.current = wordBox;
 
         // 기존 연결이 있다면 제거
-        const existingConnection = connections.get(word);
-
-        if (existingConnection) {
-          canvas.remove(existingConnection.line);
-          existingConnection.backBox.item(0).set('fill', '#ffffff');
-
-          setConnections((prev) => {
-            const newMap = new Map(prev);
-            newMap.delete(word);
-            return newMap;
-          });
-
-          canvas.requestRenderAll();
-        }
+        removeExistingConnection(word);
 
         // 새로운 라인 생성
         const startPoint = getBoxStartPoint(wordBox);
@@ -183,6 +215,7 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
           strokeWidth: 3,
           selectable: false,
           evented: false,
+          connectionKey: word, // 라인에 연결 키 저장
         });
 
         currentLine.current = line;
@@ -206,22 +239,29 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
         // 연결 정보 저장
         const connectionKey = selectedFrontBox.current.get('text');
 
-        // 기존 연결이 있다면 제거
-        for (const [key, value] of connections) {
-          if (value.text === word) {
-            canvas.remove(value.line);
-            value.frontBox.item(0).set('fill', '#ffffff');
-            connections.delete(key);
-            break;
-          }
-        }
+        // 이미 이 back box와 연결된 다른 front box가 있다면 제거
+        setConnections((prev) => {
+          const newConnections = new Map(prev);
 
-        connections.set(connectionKey, {
-          line: currentLine.current!,
-          frontBox: selectedFrontBox.current!,
-          backBox: wordBox,
-          text: word,
+          // 기존에 이 back box와 연결된 다른 front box 찾아서 제거
+          for (const [key, value] of newConnections) {
+            if (value.text === word) {
+              removeExistingConnection(key);
+              break;
+            }
+          }
+
+          // 새로운 연결 추가
+          newConnections.set(connectionKey, {
+            line: currentLine.current!,
+            frontBox: selectedFrontBox.current!,
+            backBox: wordBox,
+            text: word,
+          });
+
+          return newConnections;
         });
+
         selectedFrontBox.current.item(0).set('fill', '#ffdcfb');
         wordBox.item(0).set('fill', '#e0f2fe');
 
@@ -296,24 +336,32 @@ const useIdolCanvas = (frontWords: string[], backWords: string[]) => {
 
   /** 정답 초기화 */
   const resetAnswer = () => {
-    console.log('Resetting answers');
-    console.log(connections);
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
 
-    // 모든 연결된 라인과 박스 색상 초기화
-    for (const value of connections.values()) {
-      console.log('Removing connection:', value);
-      canvas.remove(value.line);
-      value.frontBox.item(0).set('fill', '#ffffff');
-      value.backBox.item(0).set('fill', '#ffffff');
+    // 캔버스에서 모든 라인 제거
+    const objects = canvas.getObjects();
+    for (let i = objects.length - 1; i >= 0; i--) {
+      const obj = objects[i];
+      if (obj instanceof Line) {
+        canvas.remove(obj);
+      }
     }
 
-    connections.clear();
+    // 모든 박스 색상 초기화
+    objects.forEach((obj) => {
+      if (obj instanceof Group && obj.get('role')) {
+        obj.item(0).set('fill', '#ffffff');
+      }
+    });
+
+    // connections Map 완전히 초기화
+    setConnections(new Map());
     resetDragState();
     canvas.requestRenderAll();
   };
 
+  console.log(connections);
   return {
     canvasRef,
     getCurrentAnswers,
