@@ -1,15 +1,20 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
 import { ENG_QUIZ_LIST } from 'data/quiz';
 import useEngCanvas from 'hooks/useEngCanvas';
+import { useEffect } from 'react';
 import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 const EngQuiz = () => {
-  const { step, nextStep } = useStepStore((state) => state);
+  const { step, nextStep, setTitle } = useStepStore((state) => state);
   const question = ENG_QUIZ_LIST[step - 1].parts;
   const answer = ENG_QUIZ_LIST[step - 1].answer;
   const { canvasRef, getCurrentAnswer, resetAnswer } = useEngCanvas(question);
   const openModal = useModalStore((state) => state.openModal);
+
+  useEffect(() => {
+    setTitle('2교시 - 영어');
+  }, []);
 
   const handleCheckAnswerButtonClick = () => {
     const currentAnswer = getCurrentAnswer();

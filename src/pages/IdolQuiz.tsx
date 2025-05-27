@@ -1,16 +1,21 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
 import { IDOL_QUIZ_LIST } from 'data/quiz';
 import useIdolCanvas from 'hooks/useIdolCanvas';
+import { useEffect } from 'react';
 import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 function IdolQuiz() {
-  const { step, nextStep } = useStepStore((state) => state);
+  const { step, nextStep, setTitle } = useStepStore((state) => state);
   const question = IDOL_QUIZ_LIST[step - 1];
   const answers = IDOL_QUIZ_LIST[step - 1].answer;
 
   const { canvasRef, getCurrentAnswers, resetAnswer } = useIdolCanvas(question.front, question.back);
   const openModal = useModalStore((state) => state.openModal);
+
+  useEffect(() => {
+    setTitle('3교시 - 아이돌');
+  }, []);
 
   const handleCheckAnswerButtonClick = () => {
     const currentAnswers = getCurrentAnswers();

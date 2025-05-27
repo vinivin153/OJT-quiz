@@ -1,11 +1,9 @@
 import { useNavigate } from 'react-router';
+import useStepStore from 'store/useStepStore';
 
-type HeaderProps = {
-  title: string;
-};
-
-function Header({ title }: HeaderProps) {
+function Header() {
   const navigate = useNavigate();
+  const title = useStepStore((state) => state.title);
 
   /** 사용자에게 나가기 확인을 받고, 확인 시 홈 페이지로 이동하는 함수 */
   const handleExitClick = () => {
