@@ -1,15 +1,21 @@
 import { useEffect } from 'react';
 import useModalStore from 'store/useModalStore';
-import correctImage from 'assets/images/correct.png';
-import inCorrectImage from 'assets/images/incorrect.png';
 import 'styles/AnswerFeedbackModal.css';
+import { MODAL_IMAGE_URL } from 'constants/constant';
+import useStepStore from 'store/useStepStore';
+import useHeaderStore from 'store/useHeaderStore';
+import { useNavigate } from 'react-router';
 
 function AnswerFeedbackModal() {
-  const { modalType, closeModal } = useModalStore();
+  const { modalType, modalMessage, closeModal } = useModalStore();
+  const initStep = useStepStore((state) => state.initStep);
+  const resetLeftChance = useHeaderStore((state) => state.resetLeftChance);
+  const navigate = useNavigate();
 
   // 2초 후 자동으로 모달 닫기
   useEffect(() => {
-    if (modalType) {
+    // 모달 타입이 correct 또는 incorrect가 아닐 경우에만 타이머 설정
+    if (modalType === 'correct' || modalType === 'incorrect') {
       const timer = setTimeout(() => {
         closeModal();
       }, 2000);
@@ -20,6 +26,21 @@ function AnswerFeedbackModal() {
   }, [modalType, closeModal]);
 
   if (!modalType) return null;
+
+  const handleReset = () => {
+    initStep();
+    resetLeftChance();
+    closeModal();
+  };
+
+  const handleRetryClick = () => {
+    handleReset();
+  };
+
+  const handleExitClick = () => {
+    handleReset();
+    navigate('/');
+  };
 
   return (
     <div className="modal">
@@ -78,37 +99,20 @@ function AnswerFeedbackModal() {
                 </svg>
               )}
             </div>
-
-            {/* 자동 닫힘 표시 - 우상단 타이머 표시 */}
-            <div className="absolute top-2 right-2">
-              <div
-                className="w-8 h-8 rounded-full border-2 border-white border-opacity-60 flex items-center justify-center"
-                style={{
-                  animation: 'countdown 2s linear',
-                }}
-              >
-                <div
-                  className="w-1 h-1 bg-white rounded-full"
-                  style={{
-                    animation: 'pulse 0.5s ease-in-out infinite',
-                  }}
-                ></div>
-              </div>
-            </div>
           </div>
 
           {/* 본문 내용 */}
           <div className="p-8 text-center">
             <h2 className="text-gray-800 text-2xl font-bold mb-6" style={{ fontFamily: 'BMJUA' }}>
-              {modalType === 'correct' ? '정답입니다!' : '오답입니다!'}
+              {modalMessage}
             </h2>
 
             {/* 이미지 컨테이너 */}
             <div className="relative mb-6 flex justify-center">
               <div className="relative">
                 <img
-                  src={modalType === 'correct' ? correctImage : inCorrectImage}
-                  alt={modalType === 'correct' ? 'Correct' : 'Incorrect'}
+                  src={MODAL_IMAGE_URL[modalType]}
+                  alt={modalType}
                   className="w-32 h-32 rounded-full shadow-lg border-4 border-white"
                   style={{
                     animation: 'pulseGentle 2s ease-in-out infinite',
@@ -123,6 +127,26 @@ function AnswerFeedbackModal() {
                 ></div>
               </div>
             </div>
+
+            {/* 버튼 그룹 */}
+            {modalType === 'gameOver' && (
+              <div className="flex justify-around mt-8">
+                <button
+                  onClick={handleRetryClick}
+                  className="px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
+                  style={{ fontFamily: 'BMJUA' }}
+                >
+                  다시하기
+                </button>
+                <button
+                  onClick={handleExitClick}
+                  className="px-6 py-3 bg-red-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
+                  style={{ fontFamily: 'BMJUA' }}
+                >
+                  나가기
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
