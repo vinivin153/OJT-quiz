@@ -1,12 +1,18 @@
 import { INIT_ANSWER } from 'constants/constant';
-import { Canvas, FabricText, Group, Point, Rect } from 'fabric';
+import { Canvas, FabricImage, FabricText, Group, Point, Rect } from 'fabric';
 import { useEffect, useRef } from 'react';
+import questionMark from 'assets/images/question_mark.json';
+import Lottie, { type AnimationItem } from 'lottie-web';
 
 const useCanvas = (question: string) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
   const questionRef = useRef<FabricText>(null);
   const answerRef = useRef<FabricText>(null);
+  const lottieContainerRef = useRef<HTMLDivElement>(null);
+  const lottieRef = useRef<FabricImage>(null);
+  const lottieAnimationRef = useRef<AnimationItem>(null);
+  const intervalRef = useRef<number>(null);
 
   // canvas 초기화
   useEffect(() => {
@@ -17,10 +23,24 @@ const useCanvas = (question: string) => {
     initializeCanvasElements();
 
     return () => {
+      // 정리 작업
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      if (lottieAnimationRef.current) {
+        lottieAnimationRef.current.destroy();
+      }
+
       const canvas = fabricCanvasRef.current;
       if (canvas) {
         canvas.dispose();
         fabricCanvasRef.current = null;
+      }
+
+      if (lottieContainerRef.current) {
+        document.body.removeChild(lottieContainerRef.current);
+        lottieContainerRef.current = null;
       }
     };
   }, []);
@@ -57,6 +77,8 @@ const useCanvas = (question: string) => {
     // 정답 텍스트 생성
     const answerText = createAnswerText(canvas);
     canvas.add(answerText);
+
+    createLottieAnimationImage(canvas);
 
     // 숫자 버튼들 생성
     for (let i = -5; i < 5; i++) {
@@ -107,6 +129,87 @@ const useCanvas = (question: string) => {
     return answerText;
   };
 
+  /** 기존 Lottie 애니메이션 정리 함수 */
+  const cleanupLottieAnimation = () => {
+    // interval 정리
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    // Lottie 애니메이션 정리
+    if (lottieAnimationRef.current) {
+      lottieAnimationRef.current.destroy();
+      lottieAnimationRef.current = null;
+    }
+
+    // Canvas에서 이미지 제거
+    const canvas = fabricCanvasRef.current;
+    if (canvas && lottieRef.current && canvas.contains(lottieRef.current)) {
+      canvas.remove(lottieRef.current);
+    }
+
+    lottieRef.current = null;
+  };
+
+  /** 정답 애니메이션 (Lottie) 이미지 생성 함수 */
+  const createLottieAnimationImage = (canvas: Canvas) => {
+    // 기존 애니메이션 정리
+    cleanupLottieAnimation();
+
+    // DOM 컨테이너 생성 또는 재사용
+    if (!lottieContainerRef.current) {
+      const container = document.createElement('div');
+      container.style.width = '60px';
+      container.style.height = '60px';
+      container.style.position = 'fixed';
+      container.style.visibility = 'hidden';
+      document.body.appendChild(container);
+      lottieContainerRef.current = container;
+    }
+
+    const container = lottieContainerRef.current;
+    // 컨테이너 내용 초기화
+    container.innerHTML = '';
+
+    const anim = Lottie.loadAnimation({
+      container,
+      renderer: 'canvas',
+      loop: true,
+      autoplay: true,
+      animationData: questionMark,
+    });
+
+    lottieAnimationRef.current = anim;
+
+    anim.addEventListener('DOMLoaded', () => {
+      const lottieCanvas = container.querySelector('canvas') as HTMLCanvasElement;
+      if (!lottieCanvas) return;
+
+      const image = new FabricImage(lottieCanvas, {
+        width: lottieCanvas.width,
+        height: lottieCanvas.height,
+        selectable: false,
+        hasControls: false,
+        evented: false,
+      });
+      lottieRef.current = image;
+
+      // 정답 텍스트 위치와 동일하게 설정
+      const pos = new Point(canvas.getWidth() / 2 + 50, canvas.getHeight() / 5);
+      image.setPositionByOrigin(pos, 'left', 'center');
+
+      canvas.add(image);
+
+      // Lottie 애니메이션이 fabric에서 계속 업데이트되도록 설정
+      intervalRef.current = setInterval(() => {
+        if (canvas.contains(image)) {
+          canvas.requestRenderAll();
+        }
+      }, 33);
+    });
+  };
+
   /** 숫자 버튼 생성 함수 */
   const createNumberButton = (number: number, options: { left: number; top: number }, canvas: Canvas) => {
     const width = 100;
@@ -143,15 +246,20 @@ const useCanvas = (question: string) => {
 
     // 그룹에 클릭 이벤트 추가
     group.on('mousedown', () => {
-      // 클릭한 숫자에 따라 정답 텍스트 업데이트
-      if (answerRef.current) {
-        const currentText = answerRef.current.text;
-        const isInitial = currentText === INIT_ANSWER;
-        const newText = isInitial ? number.toString() : currentText + number.toString();
+      const answer = answerRef.current;
+      if (!answer) return;
 
-        answerRef.current.set({ text: newText });
-        canvas.requestRenderAll();
+      const isInitial = answer.text === INIT_ANSWER;
+      const newText = isInitial ? number.toString() : (answer.text || '') + number.toString();
+
+      answer.set({ text: newText });
+
+      // 첫 번째 숫자 입력 시 Lottie 애니메이션 완전히 제거
+      if (isInitial) {
+        cleanupLottieAnimation();
       }
+
+      canvas.requestRenderAll();
     });
 
     return group;
@@ -177,6 +285,9 @@ const useCanvas = (question: string) => {
     if (!canvas || !answer) return;
 
     answer.set({ text: INIT_ANSWER });
+
+    // 항상 새로운 Lottie 애니메이션 생성
+    createLottieAnimationImage(canvas);
     canvas.requestRenderAll();
   };
 
