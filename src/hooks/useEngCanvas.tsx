@@ -254,7 +254,7 @@ const useEngCanvas = (parts: string[]) => {
       return answerString;
     }, '');
 
-    return answer?.trim();
+    return answer?.trim() || '';
   };
 
   return { canvasRef, getCurrentAnswer, resetAnswer };
