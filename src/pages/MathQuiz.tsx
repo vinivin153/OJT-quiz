@@ -1,19 +1,24 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
+import { MATH_TITLE } from 'constants/constant';
 import { MATH_QUIZ_LIST } from 'data/quiz';
 import useMathCanvas from 'hooks/useMathCanvas';
 import { useEffect } from 'react';
+import useHeaderStore from 'store/useHeaderStore';
 import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 function MathQuiz() {
-  const { step, nextStep, setTitle } = useStepStore((state) => state);
+  const { step, nextStep } = useStepStore((state) => state);
+  const setTitle = useHeaderStore((state) => state.setTitle);
+  const openModal = useModalStore((state) => state.openModal);
+  const decreaseLeftChance = useHeaderStore((state) => state.decreaseLeftChance);
+
   const question = MATH_QUIZ_LIST[step - 1].question;
   const answer = MATH_QUIZ_LIST[step - 1].answer;
   const { canvasRef, resetAnswer, getCurrentAnswer } = useMathCanvas(question);
-  const openModal = useModalStore((state) => state.openModal);
 
   useEffect(() => {
-    setTitle('1교시 - 수학');
+    setTitle(MATH_TITLE);
   }, []);
 
   /** 정답확인 버튼을 클릭했을 때 정답인 경우 다음 단계로 넘어가고, 오답인 경우 다시 시도하라는 알림을 띄움 */
@@ -30,6 +35,7 @@ function MathQuiz() {
     }
 
     openModal('incorrect');
+    decreaseLeftChance();
     resetAnswer();
   };
 

@@ -2,11 +2,14 @@ import CheckAnswerButton from 'components/CheckAnswerButton';
 import { ENG_QUIZ_LIST } from 'data/quiz';
 import useEngCanvas from 'hooks/useEngCanvas';
 import { useEffect } from 'react';
+import useHeaderStore from 'store/useHeaderStore';
 import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 const EngQuiz = () => {
-  const { step, nextStep, setTitle } = useStepStore((state) => state);
+  const { step, nextStep } = useStepStore((state) => state);
+  const setTitle = useHeaderStore((state) => state.setTitle);
+
   const question = ENG_QUIZ_LIST[step - 1].parts;
   const answer = ENG_QUIZ_LIST[step - 1].answer;
   const { canvasRef, getCurrentAnswer, resetAnswer } = useEngCanvas(question);

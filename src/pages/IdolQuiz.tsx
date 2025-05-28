@@ -2,11 +2,14 @@ import CheckAnswerButton from 'components/CheckAnswerButton';
 import { IDOL_QUIZ_LIST } from 'data/quiz';
 import useIdolCanvas from 'hooks/useIdolCanvas';
 import { useEffect } from 'react';
+import useHeaderStore from 'store/useHeaderStore';
 import useModalStore from 'store/useModalStore';
 import useStepStore from 'store/useStepStore';
 
 function IdolQuiz() {
-  const { step, nextStep, setTitle } = useStepStore((state) => state);
+  const { step, nextStep } = useStepStore((state) => state);
+  const setTitle = useHeaderStore((state) => state.setTitle);
+
   const question = IDOL_QUIZ_LIST[step - 1];
   const answers = IDOL_QUIZ_LIST[step - 1].answer;
 
