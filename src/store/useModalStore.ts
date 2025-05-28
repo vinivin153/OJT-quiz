@@ -1,16 +1,18 @@
 import { create } from 'zustand';
 
-type ModalType = 'correct' | 'incorrect' | null;
+type ModalType = 'correct' | 'incorrect' | 'gameOver' | null;
 
 type ModalStore = {
   modalType: ModalType;
-  openModal: (type: ModalType) => void;
+  modalMessage: string;
+  openModal: (type: ModalType, message: string) => void;
   closeModal: () => void;
 };
 
 const useModalStore = create<ModalStore>((set) => ({
   modalType: null,
-  openModal: (type) => set({ modalType: type }),
+  modalMessage: '',
+  openModal: (type, message) => set({ modalType: type, modalMessage: message }),
   closeModal: () => set({ modalType: null }),
 }));
 
