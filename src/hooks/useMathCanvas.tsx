@@ -1,5 +1,5 @@
 import { INIT_ANSWER } from 'constants/constant';
-import { Canvas, FabricImage, FabricText, Group, Point, Rect, Shadow } from 'fabric';
+import { Canvas, Circle, FabricImage, FabricText, Group, Point, Rect, Shadow } from 'fabric';
 import { useEffect, useRef } from 'react';
 import questionMark from 'assets/images/question_mark.json';
 import Lottie, { type AnimationItem } from 'lottie-web';
@@ -128,6 +128,87 @@ const useCanvas = (question: string) => {
     answerRef.current = answerText;
 
     return answerText;
+  };
+
+  /** 숫자 시각적 객체 렌더링 함수 */
+  const renderNumberVisuals = (question: string, canvas: Canvas) => {
+    const match = question.match(/(\d+)\s*[\+\-\×\*\/]\s*(\d+)/);
+    if (!match) return;
+
+    const [, num1Str, num2Str] = match;
+    const num1 = parseInt(num1Str, 10);
+    const num2 = parseInt(num2Str, 10);
+
+    const baseX = canvas.getWidth() / 2;
+    const baseY = canvas.getHeight() / 3 + 50;
+
+    const radius = 10;
+    const spacing = 8;
+    const maxPerRow = 10;
+    const rowHeight = radius * 2 + spacing;
+    const padding = 10;
+
+    // 기존 시각적 객체 제거
+    const existing = canvas.getObjects('group').filter((obj) => (obj as any).data === 'number-visual');
+    existing.forEach((obj) => canvas.remove(obj));
+
+    const createBubbleGroup = (count: number, fill: string, bgFill: string, left: number, top: number): Group => {
+      const circles: Circle[] = [];
+
+      let maxCol = Math.min(count, maxPerRow);
+      let rowCount = Math.ceil(count / maxPerRow);
+
+      for (let i = 0; i < count; i++) {
+        const row = Math.floor(i / maxPerRow);
+        const col = i % maxPerRow;
+
+        const circle = new Circle({
+          radius,
+          fill,
+          left: col * (radius * 2 + spacing),
+          top: row * rowHeight,
+          originX: 'left',
+          originY: 'top',
+        });
+
+        circles.push(circle);
+      }
+
+      const groupWidth = maxCol * (radius * 2 + spacing) - spacing;
+      const groupHeight = rowCount * rowHeight;
+
+      const background = new Rect({
+        width: groupWidth + padding * 2,
+        height: groupHeight + padding * 2,
+        rx: 16,
+        ry: 16,
+        fill: bgFill,
+        stroke: '#d1d5db',
+        strokeWidth: 1,
+        originX: 'left',
+        originY: 'top',
+        left: -padding,
+        top: -padding - 4,
+      });
+
+      const group = new Group([background, ...circles], {
+        left,
+        top,
+        selectable: false,
+        evented: false,
+      }) as Group & { data?: string };
+
+      group.data = 'number-visual';
+      return group;
+    };
+
+    const group1 = createBubbleGroup(num1, '#f87171', '#fef2f2', baseX - 200, baseY);
+    group1.setPositionByOrigin(new Point(baseX - 200, baseY), 'center', 'center');
+    const group2 = createBubbleGroup(num2, '#60a5fa', '#eff6ff', baseX + 50, baseY);
+    group2.setPositionByOrigin(new Point(baseX + 200, baseY), 'center', 'center');
+
+    canvas.add(group1, group2);
+    canvas.requestRenderAll();
   };
 
   /** 기존 Lottie 애니메이션 정리 함수 */
@@ -292,6 +373,7 @@ const useCanvas = (question: string) => {
     question.set({ text: newQuestion });
     const questionPos = new Point(canvas.getWidth() / 2 + 50, canvas.getHeight() / 5);
     question.setPositionByOrigin(questionPos, 'right', 'center');
+    renderNumberVisuals(newQuestion, canvas);
     canvas.requestRenderAll();
   };
 
