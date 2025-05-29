@@ -66,6 +66,12 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
 
       const target = e.target;
       if (!target || !target.get('role') || target.get('role') !== 'back') {
+        selectedFrontBox.current?.item(0).set({
+          fill: COLORS.frontFill,
+          stroke: COLORS.border,
+          strokeWidth: 1,
+          strokeDashArray: [5, 5],
+        });
         canvas.remove(currentLine.current);
         canvas.requestRenderAll();
         resetDragState();
