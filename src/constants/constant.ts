@@ -1,6 +1,7 @@
 import correctImage from 'assets/Images/correct.png';
 import inCorrectImage from 'assets/Images/incorrect.png';
 import gameOverImage from 'assets/Images/gameover.png';
+import gameClearImage from 'assets/Images/gameclear.png';
 
 export const TOTAL_STEPS = 3;
 export const TOTAL_CHANCES = 3;
@@ -15,4 +16,5 @@ export const MODAL_IMAGE_URL = {
   correct: correctImage,
   incorrect: inCorrectImage,
   gameOver: gameOverImage,
+  gameClear: gameClearImage,
 } as const;

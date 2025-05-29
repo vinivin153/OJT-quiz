@@ -62,7 +62,7 @@ function AnswerFeedbackModal() {
           {/* 상단 컬러 헤더 */}
           <div
             className={`h-20 relative overflow-hidden ${
-              modalType === 'correct'
+              modalType === 'correct' || modalType === 'gameClear'
                 ? 'bg-gradient-to-r from-green-400 to-green-500'
                 : 'bg-gradient-to-r from-red-400 to-red-500'
             }`}
@@ -73,7 +73,7 @@ function AnswerFeedbackModal() {
 
             {/* 아이콘 */}
             <div className="flex items-center justify-center h-full">
-              {modalType === 'correct' ? (
+              {modalType === 'correct' || modalType === 'gameClear' ? (
                 <svg
                   className="w-12 h-12 text-white"
                   fill="none"
@@ -121,7 +121,7 @@ function AnswerFeedbackModal() {
                 {/* 이미지 주변 글로우 효과 */}
                 <div
                   className={`absolute inset-0 rounded-full shadow-2xl ${
-                    modalType === 'correct' ? 'shadow-green-200' : 'shadow-red-200'
+                    modalType === 'correct' || modalType === 'gameClear' ? 'shadow-green-200' : 'shadow-red-200'
                   }`}
                   style={{ zIndex: -1 }}
                 ></div>
@@ -129,24 +129,25 @@ function AnswerFeedbackModal() {
             </div>
 
             {/* 버튼 그룹 */}
-            {modalType === 'gameOver' && (
-              <div className="flex justify-around mt-8">
-                <button
-                  onClick={handleRetryClick}
-                  className="px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
-                  style={{ fontFamily: 'BMJUA' }}
-                >
-                  다시하기
-                </button>
-                <button
-                  onClick={handleExitClick}
-                  className="px-6 py-3 bg-red-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
-                  style={{ fontFamily: 'BMJUA' }}
-                >
-                  나가기
-                </button>
-              </div>
-            )}
+            {modalType === 'gameOver' ||
+              (modalType === 'gameClear' && (
+                <div className="flex justify-around mt-8">
+                  <button
+                    onClick={handleRetryClick}
+                    className="px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
+                    style={{ fontFamily: 'BMJUA' }}
+                  >
+                    다시하기
+                  </button>
+                  <button
+                    onClick={handleExitClick}
+                    className="px-6 py-3 bg-red-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
+                    style={{ fontFamily: 'BMJUA' }}
+                  >
+                    나가기
+                  </button>
+                </div>
+              ))}
           </div>
         </div>
       </div>

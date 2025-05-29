@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type ModalType = 'correct' | 'incorrect' | 'gameOver' | null;
+type ModalType = 'correct' | 'incorrect' | 'gameOver' | 'gameClear' | null;
 
 type ModalStore = {
   modalType: ModalType;
