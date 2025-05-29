@@ -1,8 +1,9 @@
 import { INIT_ANSWER } from 'constants/constant';
-import { Canvas, FabricImage, FabricText, Group, Point, Rect } from 'fabric';
+import { Canvas, FabricImage, FabricText, Group, Point, Rect, Shadow } from 'fabric';
 import { useEffect, useRef } from 'react';
 import questionMark from 'assets/images/question_mark.json';
 import Lottie, { type AnimationItem } from 'lottie-web';
+import { COLORS } from 'constants/constant';
 
 const useCanvas = (question: string) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,7 +61,7 @@ const useCanvas = (question: string) => {
       width: window.innerWidth - 120,
       height: window.innerHeight - 260,
     });
-    canvas.backgroundColor = '#f3f3f3';
+    canvas.backgroundColor = COLORS.background;
 
     fabricCanvasRef.current = canvas;
   };
@@ -99,7 +100,7 @@ const useCanvas = (question: string) => {
     const questionText = new FabricText('', {
       fontSize: 62,
       textAlign: 'center',
-      fill: '#000',
+      fill: '#1e1e1e',
       fontFamily: 'BMJUA',
       selectable: false,
       hoverCursor: 'null',
@@ -219,18 +220,24 @@ const useCanvas = (question: string) => {
     const rect = new Rect({
       width,
       height,
-      fill: '#e0e0e0',
-      stroke: '#000',
-      strokeWidth: 2,
-      rx: 10,
-      ry: 10,
+      fill: '#ffffff',
+      stroke: '#cccccc',
+      strokeWidth: 1,
+      rx: 20, // 더 동그랗게
+      ry: 20,
+      shadow: new Shadow({
+        color: '#ccc',
+        blur: 10,
+        offsetX: 2,
+        offsetY: 2,
+      }),
     });
 
     // 숫자 텍스트 생성
     const text = new FabricText(number.toString(), {
-      fontSize: 40,
+      fontSize: 36,
       textAlign: 'center',
-      fill: '#000',
+      fill: '#333',
       fontFamily: 'BMJUA',
     });
     const textPos = new Point(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -259,6 +266,16 @@ const useCanvas = (question: string) => {
         cleanupLottieAnimation();
       }
 
+      canvas.requestRenderAll();
+    });
+
+    // hover 효과 추가
+    group.on('mouseover', () => {
+      rect.set('fill', '#f0f0f0');
+      canvas.requestRenderAll();
+    });
+    group.on('mouseout', () => {
+      rect.set('fill', '#ffffff');
       canvas.requestRenderAll();
     });
 

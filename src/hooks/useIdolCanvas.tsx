@@ -1,3 +1,4 @@
+import { COLORS } from 'constants/constant';
 import { Canvas, FabricText, Group, Line, Point, Rect, Shadow } from 'fabric';
 import { useEffect, useRef } from 'react';
 
@@ -39,7 +40,7 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
       height: window.innerHeight - 260,
       selection: false,
     });
-    canvas.backgroundColor = '#f3f3f3';
+    canvas.backgroundColor = '#f9f9fb';
 
     fabricCanvasRef.current = canvas;
   };
@@ -117,8 +118,8 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
       canvas.remove(connection.line);
 
       // 박스 색상 초기화
-      connection.frontBox.item(0).set('fill', '#ffffff');
-      connection.backBox.item(0).set('fill', '#ffffff');
+      connection.frontBox.item(0).set({ fill: COLORS.frontFill, strokeWidth: 1 });
+      connection.backBox.item(0).set({ fill: COLORS.backFill, strokeWidth: 1 });
 
       // 연결 정보 제거
       connections.delete(frontWord);
@@ -132,23 +133,19 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
     const wordRect = new Rect({
       width: 200,
       height: 60,
-      fill: '#ffffff',
-      stroke: '#374151',
-      strokeWidth: 2,
-      rx: 10,
-      ry: 10,
-      shadow: new Shadow({
-        color: 'rgba(0,0,0,0.3)',
-        offsetX: 3,
-        offsetY: 3,
-        blur: 5,
-      }),
+      fill: isFront ? COLORS.frontFill : COLORS.backFill,
+      stroke: COLORS.border,
+      strokeWidth: 1,
+      strokeDashArray: [5, 5],
+      rx: 12,
+      ry: 12,
+      shadow: new Shadow(COLORS.shadow),
     });
 
     const wordText = new FabricText(word, {
       fontSize: 24,
-      fill: '#374151',
-      fontWeight: 'bold',
+      fill: COLORS.text,
+      fontWeight: 500,
       textAlign: 'center',
       fontFamily: 'BMJUA',
     });
@@ -181,13 +178,14 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
         const pointer = canvas.getScenePoint(e.e);
 
         const line = new Line([startPoint.x, startPoint.y, pointer.x, pointer.y], {
-          stroke: '#3b82f6',
+          stroke: COLORS.line,
           strokeWidth: 3,
           selectable: false,
           evented: false,
         });
 
         currentLine.current = line;
+        wordBox.item(0).set({ fill: COLORS.selectedFrontFill, strokeWidth: 0 });
         canvas.add(line);
         canvas.requestRenderAll();
       });
@@ -224,8 +222,8 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
         });
 
         // 박스 색상 변경
-        selectedFrontBox.current.item(0).set('fill', '#ffdcfb');
-        wordBox.item(0).set('fill', '#e0f2fe');
+        selectedFrontBox.current.item(0).set('fill', COLORS.selectedFrontFill);
+        wordBox.item(0).set({ fill: COLORS.selectedBackFill, strokeWidth: 0 });
 
         canvas.requestRenderAll();
         resetDragState();
@@ -308,8 +306,13 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
 
     // 모든 박스 색상 초기화
     objects.forEach((obj) => {
-      if (obj instanceof Group && obj.get('role')) {
-        obj.item(0).set('fill', '#ffffff');
+      const role = obj.get('role');
+      if (obj instanceof Group && role) {
+        if (role === 'front') {
+          obj.item(0).set('fill', COLORS.frontFill);
+        } else {
+          obj.item(0).set('fill', COLORS.backFill);
+        }
       }
     });
 

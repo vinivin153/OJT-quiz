@@ -1,3 +1,4 @@
+import { COLORS } from 'constants/constant';
 import { Canvas, FabricText, Group, Line, Point, Rect, Shadow } from 'fabric';
 import { useEffect, useRef } from 'react';
 
@@ -35,7 +36,7 @@ const useEngCanvas = (parts: string[]) => {
       width: window.innerWidth - 120,
       height: window.innerHeight - 260,
     });
-    canvas.backgroundColor = '#f3f3f3';
+    canvas.backgroundColor = COLORS.background;
 
     fabricCanvasRef.current = canvas;
   };
@@ -176,7 +177,7 @@ const useEngCanvas = (parts: string[]) => {
     let posX = canvas.getWidth() / 2 - totalWidth / 2;
     const posY = (canvas.getHeight() / 10) * 7 - 20;
 
-    const WordParts = parts.map((part) => {
+    const wordParts = parts.map((part) => {
       const partWidth = part.length * 30 + 20;
       const wordPart = createWordPart(part, {
         left: posX,
@@ -187,7 +188,7 @@ const useEngCanvas = (parts: string[]) => {
       return wordPart;
     });
 
-    return WordParts;
+    return wordParts;
   };
 
   /** 단어 박스 드래그 앤 드롭 후 정렬 함수 */
