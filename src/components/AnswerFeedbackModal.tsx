@@ -129,25 +129,24 @@ function AnswerFeedbackModal() {
             </div>
 
             {/* 버튼 그룹 */}
-            {modalType === 'gameOver' ||
-              (modalType === 'gameClear' && (
-                <div className="flex justify-around mt-8">
-                  <button
-                    onClick={handleRetryClick}
-                    className="px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
-                    style={{ fontFamily: 'BMJUA' }}
-                  >
-                    다시하기
-                  </button>
-                  <button
-                    onClick={handleExitClick}
-                    className="px-6 py-3 bg-red-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
-                    style={{ fontFamily: 'BMJUA' }}
-                  >
-                    나가기
-                  </button>
-                </div>
-              ))}
+            {(modalType === 'gameOver' || modalType === 'gameClear') && (
+              <div className="flex justify-around mt-8">
+                <button
+                  onClick={handleRetryClick}
+                  className="px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
+                  style={{ fontFamily: 'BMJUA' }}
+                >
+                  다시하기
+                </button>
+                <button
+                  onClick={handleExitClick}
+                  className="px-6 py-3 bg-red-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-150 ease-in-out"
+                  style={{ fontFamily: 'BMJUA' }}
+                >
+                  나가기
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
