@@ -1,7 +1,7 @@
-import correctImage from 'assets/Images/correct.png';
-import inCorrectImage from 'assets/Images/incorrect.png';
-import gameOverImage from 'assets/Images/gameover.png';
-import gameClearImage from 'assets/Images/gameclear.png';
+import correctImage from 'assets/Images/correct.webp';
+import inCorrectImage from 'assets/Images/incorrect.webp';
+import gameOverImage from 'assets/Images/gameover.webp';
+import gameClearImage from 'assets/Images/gameclear.webp';
 
 export const TOTAL_STEPS = 3;
 export const TOTAL_CHANCES = 3;
