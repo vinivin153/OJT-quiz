@@ -22,6 +22,8 @@
     <line x1="0" y1="950" x2="100%" y2="950"></line>
     <line x1="0" y1="1000" x2="100%" y2="1000"></line>
   </g>
-  <line x1="100" y1="0" x2="100" y2="100%" stroke="#f9cccc" stroke-width="1"></line>
-  <line x1="102" y1="0" x2="102" y2="100%" stroke="#f9cccc" stroke-width="1"></line>
+  <g stroke="#f9cccc" stroke-width="1" >
+    <line x1="100" y1="0" x2="100" y2="100%"></line>
+    <line x1="102" y1="0" x2="102" y2="100%"></line>
+  </g>
 </svg>
