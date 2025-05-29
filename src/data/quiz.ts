@@ -6,8 +6,8 @@ export const MATH_QUIZ_LIST = [
   },
   {
     id: 2,
-    question: '43 - 19 = ',
-    answer: '24',
+    question: '23 - 11 = ',
+    answer: '12',
   },
   {
     id: 3,
