@@ -1,6 +1,7 @@
+import type { MODAL_TYPES } from 'constants/constant';
 import { create } from 'zustand';
 
-type ModalType = 'correct' | 'incorrect' | 'gameOver' | 'gameClear' | null;
+export type ModalType = (typeof MODAL_TYPES)[keyof typeof MODAL_TYPES] | null;
 
 type ModalStore = {
   modalType: ModalType;

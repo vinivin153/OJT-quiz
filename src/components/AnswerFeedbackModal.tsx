@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useModalStore from 'store/useModalStore';
 import 'styles/AnswerFeedbackModal.css';
-import { MODAL_IMAGE_URL } from 'constants/constant';
+import { MODAL_CLOSE_DELAY, MODAL_IMAGE_URL, MODAL_TYPES } from 'constants/constant';
 import useStepStore from 'store/useStepStore';
 import useHeaderStore from 'store/useHeaderStore';
 import { useNavigate } from 'react-router';
@@ -15,10 +15,10 @@ function AnswerFeedbackModal() {
   // 2초 후 자동으로 모달 닫기
   useEffect(() => {
     // 모달 타입이 correct 또는 incorrect가 아닐 경우에만 타이머 설정
-    if (modalType === 'correct' || modalType === 'incorrect') {
+    if (modalType === MODAL_TYPES.CORRECT || modalType === MODAL_TYPES.INCORRECT) {
       const timer = setTimeout(() => {
         closeModal();
-      }, 2000);
+      }, MODAL_CLOSE_DELAY);
 
       // 컴포넌트가 언마운트되거나 모달이 바뀔 때 타이머 정리
       return () => clearTimeout(timer);
@@ -62,7 +62,7 @@ function AnswerFeedbackModal() {
           {/* 상단 컬러 헤더 */}
           <div
             className={`h-20 relative overflow-hidden ${
-              modalType === 'correct' || modalType === 'gameClear'
+              modalType === MODAL_TYPES.CORRECT || modalType === MODAL_TYPES.GAME_CLEAR
                 ? 'bg-gradient-to-r from-green-400 to-green-500'
                 : 'bg-gradient-to-r from-red-400 to-red-500'
             }`}
@@ -73,7 +73,7 @@ function AnswerFeedbackModal() {
 
             {/* 아이콘 */}
             <div className="flex items-center justify-center h-full">
-              {modalType === 'correct' || modalType === 'gameClear' ? (
+              {modalType === MODAL_TYPES.CORRECT || modalType === MODAL_TYPES.GAME_CLEAR ? (
                 <svg
                   className="w-12 h-12 text-white"
                   fill="none"
@@ -121,7 +121,9 @@ function AnswerFeedbackModal() {
                 {/* 이미지 주변 글로우 효과 */}
                 <div
                   className={`absolute inset-0 rounded-full shadow-2xl ${
-                    modalType === 'correct' || modalType === 'gameClear' ? 'shadow-green-200' : 'shadow-red-200'
+                    modalType === MODAL_TYPES.CORRECT || modalType === MODAL_TYPES.GAME_CLEAR
+                      ? 'shadow-green-200'
+                      : 'shadow-red-200'
                   }`}
                   style={{ zIndex: -1 }}
                 ></div>
@@ -129,7 +131,7 @@ function AnswerFeedbackModal() {
             </div>
 
             {/* 버튼 그룹 */}
-            {(modalType === 'gameOver' || modalType === 'gameClear') && (
+            {(modalType === MODAL_TYPES.GAME_OVER || modalType === MODAL_TYPES.GAME_CLEAR) && (
               <div className="flex justify-around mt-8">
                 <button
                   onClick={handleRetryClick}
