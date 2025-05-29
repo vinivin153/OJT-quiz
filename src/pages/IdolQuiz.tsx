@@ -14,7 +14,7 @@ function IdolQuiz() {
   const question = IDOL_QUIZ_LIST[step - 1];
   const answers = IDOL_QUIZ_LIST[step - 1].answer;
 
-  const { canvasRef, getCurrentAnswers, resetAnswer } = useIdolCanvas(question.front, question.back);
+  const { canvasRef, getCurrentAnswers, resetAnswer } = useIdolCanvas(question.front, question.back, step);
 
   useEffect(() => {
     setTitle('3교시 - 아이돌');
