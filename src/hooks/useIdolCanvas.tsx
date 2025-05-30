@@ -1,4 +1,4 @@
-import { COLORS } from 'constants/constant';
+import { COLORS, QUESTION_TEXT } from 'constants/constant';
 import { Canvas, FabricText, Group, Line, Point, Rect, Shadow } from 'fabric';
 import { useEffect, useRef } from 'react';
 
@@ -71,6 +71,7 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
           stroke: COLORS.border,
           strokeWidth: 1,
           strokeDashArray: [5, 5],
+          shadow: null,
         });
         canvas.remove(currentLine.current);
         canvas.requestRenderAll();
@@ -96,7 +97,7 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
 
   /** 문제 설명을 생성하는 함수 */
   const createQuestionText = (canvas: Canvas) => {
-    const questionText = new FabricText('멤버와 소속그룹을 알맞게 연결하세요', {
+    const questionText = new FabricText(QUESTION_TEXT.IDOL, {
       fontSize: 28,
       fill: '#374151',
       fontWeight: 'bold',
@@ -124,8 +125,8 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
       canvas.remove(connection.line);
 
       // 박스 색상 초기화
-      connection.frontBox.item(0).set({ fill: COLORS.frontFill, strokeWidth: 1 });
-      connection.backBox.item(0).set({ fill: COLORS.backFill, strokeWidth: 1 });
+      connection.frontBox.item(0).set({ fill: COLORS.frontFill, strokeWidth: 1, shadow: null });
+      connection.backBox.item(0).set({ fill: COLORS.backFill, strokeWidth: 1, shadow: null });
 
       // 연결 정보 제거
       connections.delete(frontWord);
@@ -145,7 +146,6 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
       strokeDashArray: [5, 5],
       rx: 12,
       ry: 12,
-      shadow: new Shadow(COLORS.shadow),
     });
 
     const wordText = new FabricText(word, {
@@ -191,7 +191,7 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
         });
 
         currentLine.current = line;
-        wordBox.item(0).set({ fill: COLORS.selectedFrontFill, strokeWidth: 0 });
+        wordBox.item(0).set({ fill: COLORS.selectedFrontFill, strokeWidth: 0, shadow: new Shadow(COLORS.shadow) });
         canvas.add(line);
         canvas.requestRenderAll();
       });
@@ -228,8 +228,8 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
         });
 
         // 박스 색상 변경
-        selectedFrontBox.current.item(0).set('fill', COLORS.selectedFrontFill);
-        wordBox.item(0).set({ fill: COLORS.selectedBackFill, strokeWidth: 0 });
+        selectedFrontBox.current.item(0).set({ fill: COLORS.selectedFrontFill, shadow: new Shadow(COLORS.shadow) });
+        wordBox.item(0).set({ fill: COLORS.selectedBackFill, strokeWidth: 0, shadow: new Shadow(COLORS.shadow) });
 
         canvas.requestRenderAll();
         resetDragState();
@@ -315,9 +315,9 @@ const useIdolCanvas = (frontWords: string[], backWords: string[], step: number) 
       const role = obj.get('role');
       if (obj instanceof Group && role) {
         if (role === 'front') {
-          obj.item(0).set('fill', COLORS.frontFill);
+          obj.item(0).set({ fill: COLORS.frontFill, strokeWidth: 1, shadow: null });
         } else {
-          obj.item(0).set('fill', COLORS.backFill);
+          obj.item(0).set({ fill: COLORS.backFill, strokeWidth: 1, shadow: null });
         }
       }
     });
