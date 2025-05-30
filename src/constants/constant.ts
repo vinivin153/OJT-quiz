@@ -8,10 +8,15 @@ export const FINAL_STEP = TOTAL_STEPS;
 export const TOTAL_CHANCES = 3;
 export const FINAL_CHANCE = 1;
 
-export const SUBJECTS = ['수학', '영어', '아이돌'] as const;
+export const MATH = '수학';
+export const ENG = '영어';
+export const IDOL = '국어';
+
 export const MATH_TITLE = '1교시 - 수학';
-export const ENGLISH_TITLE = '2교시 - 영어';
-export const IDOL_TITLE = '3교시 - 아이돌';
+export const ENG_TITLE = '2교시 - 영어';
+export const IDOL_TITLE = '3교시 - 국어';
+
+export const SUBJECTS = Object.freeze([MATH, ENG, IDOL] as const);
 
 export const INIT_ANSWER = '';
 export const MODAL_IMAGE_URL = Object.freeze({
@@ -19,6 +24,12 @@ export const MODAL_IMAGE_URL = Object.freeze({
   incorrect: inCorrectImage,
   gameOver: gameOverImage,
   gameClear: gameClearImage,
+} as const);
+export const QUESTION_TEXT = Object.freeze({
+  MATH: '다음 문제를 풀어보세요',
+  ENG: '다음 단어를 올바른 순서로 배열하세요',
+  // IDOL: '멤버와 소속그룹을 알맞게 연결하세요',
+  IDOL: '연관된 단어를 올바르게 연결하세요',
 } as const);
 
 export const MODAL_TYPES = Object.freeze({

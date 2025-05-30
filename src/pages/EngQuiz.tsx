@@ -1,4 +1,5 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
+import { ENG_TITLE } from 'constants/constant';
 import { ENG_QUIZ_LIST } from 'data/quiz';
 import useEngCanvas from 'hooks/useEngCanvas';
 import useQuizHandler from 'hooks/useQuizHandler';
@@ -16,7 +17,7 @@ const EngQuiz = () => {
   const { canvasRef, getCurrentAnswer, resetAnswer } = useEngCanvas(question);
 
   useEffect(() => {
-    setTitle('2교시 - 영어');
+    setTitle(ENG_TITLE);
   }, [setTitle]);
 
   const handleCheckAnswerButtonClick = () => {

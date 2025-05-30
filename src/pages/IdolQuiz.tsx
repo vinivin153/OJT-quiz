@@ -1,4 +1,5 @@
 import CheckAnswerButton from 'components/CheckAnswerButton';
+import { IDOL_TITLE } from 'constants/constant';
 import { IDOL_QUIZ_LIST } from 'data/quiz';
 import useIdolCanvas from 'hooks/useIdolCanvas';
 import useQuizHandler from 'hooks/useQuizHandler';
@@ -17,7 +18,7 @@ function IdolQuiz() {
   const { canvasRef, getCurrentAnswers, resetAnswer } = useIdolCanvas(question.front, question.back, step);
 
   useEffect(() => {
-    setTitle('3교시 - 아이돌');
+    setTitle(IDOL_TITLE);
   }, [setTitle]);
 
   const handleCheckAnswerButtonClick = () => {

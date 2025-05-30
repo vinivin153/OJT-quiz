@@ -1,4 +1,4 @@
-import { COLORS } from 'constants/constant';
+import { COLORS, QUESTION_TEXT } from 'constants/constant';
 import { Canvas, FabricText, Group, Line, Point, Rect, Shadow } from 'fabric';
 import { useEffect, useRef } from 'react';
 
@@ -70,7 +70,7 @@ const useEngCanvas = (parts: string[]) => {
 
   /** 문제 설명을 생성하는 함수 */
   const createQuestionText = (canvas: Canvas) => {
-    const questionText = new FabricText('다음 단어를 올바른 순서로 배열하세요', {
+    const questionText = new FabricText(QUESTION_TEXT.ENG, {
       fontSize: 28,
       fill: '#374151',
       fontWeight: 'bold',
