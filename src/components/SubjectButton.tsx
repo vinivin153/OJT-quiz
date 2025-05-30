@@ -13,7 +13,7 @@ function SubjectButton({ text }: SubjectButtonProps) {
 
     if (text.match('수학')) path = '/quiz/math';
     else if (text.match('영어')) path = '/quiz/english';
-    else if (text.match('아이돌')) path = '/quiz/idol';
+    else if (text.match('국어')) path = '/quiz/idol';
 
     if (!path) {
       alert('해당 과목은 아직 준비 중입니다.');
