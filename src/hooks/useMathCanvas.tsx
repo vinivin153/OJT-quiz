@@ -288,7 +288,7 @@ const useCanvas = (question: string) => {
         if (canvas.contains(image)) {
           canvas.requestRenderAll();
         }
-      }, 33);
+      }, 30);
     });
   };
 
@@ -298,20 +298,22 @@ const useCanvas = (question: string) => {
     const height = 100;
 
     // 박스 생성
+    const shadow = new Shadow({
+      color: '#ccc',
+      blur: 10,
+      offsetX: 2,
+      offsetY: 2,
+    });
+
     const rect = new Rect({
       width,
       height,
-      fill: '#ffffff',
-      stroke: '#cccccc',
+      fill: '#fff',
+      stroke: '#ccc',
       strokeWidth: 1,
-      rx: 20, // 더 동그랗게
+      rx: 20,
       ry: 20,
-      shadow: new Shadow({
-        color: '#ccc',
-        blur: 10,
-        offsetX: 2,
-        offsetY: 2,
-      }),
+      shadow,
     });
 
     // 숫자 텍스트 생성
